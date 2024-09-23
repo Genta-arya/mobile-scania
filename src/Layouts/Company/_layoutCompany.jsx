@@ -1,13 +1,25 @@
-import { StyleSheet, View } from 'react-native';
-import React from 'react';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
 import { WebView } from 'react-native-webview';
 
 const LayoutCompany = () => {
+  const [loading, setLoading] = useState(true);
+
+  const handleLoadEnd = () => {
+    setLoading(false); 
+  };
+
   return (
     <View style={styles.container}>
+      {loading && ( 
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
       <WebView
         source={{ uri: 'https://www.kppmining.com/profile' }}
         style={styles.webview}
+        onLoadEnd={handleLoadEnd} 
       />
     </View>
   );
@@ -21,5 +33,15 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  loading: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
   },
 });

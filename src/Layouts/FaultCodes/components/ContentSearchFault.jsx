@@ -13,6 +13,7 @@ import React, {useEffect, useState} from 'react';
 import {getFaultCodes} from '../../../API/service/FaultCodes/_serviceFaultCodes';
 import {Colors} from '../../../utils/Constants';
 import {useNavigation} from '@react-navigation/native';
+import {showMessage} from 'react-native-flash-message';
 
 const ContentSearchFault = () => {
   const [data, setData] = useState([]);
@@ -38,8 +39,12 @@ const ContentSearchFault = () => {
       //   setData(modifiedData);
       setData(response.data);
     } catch (error) {
-      console.log(error);
-      ToastAndroid.show('Failed to retrieve data', ToastAndroid.SHORT);
+ 
+      showMessage({
+        message: 'Failed to retrieve data',
+        type: 'danger',
+        icon: {icon: 'danger', position: 'right'},
+      });
     } finally {
       setLoading(false);
     }
@@ -59,6 +64,11 @@ const ContentSearchFault = () => {
     setRefreshing(true);
     await fetchData();
     setRefreshing(false);
+    showMessage({
+      message: 'Refreshed successfully',
+      type: 'success',
+      icon: {icon: 'success', position: 'right'},
+    })
   };
 
   const handleCodePress = code => {
@@ -148,7 +158,7 @@ const ContentSearchFault = () => {
                   <TouchableOpacity
                     key={code.id}
                     onPress={() => handleCodePress(code)}>
-                    <Text style={styles.suggestion}> # {code.code}</Text>
+                    <Text style={styles.suggestion}> ~ {code.code}</Text>
                   </TouchableOpacity>
                 ))}
               {selectedFaultCode.codes.filter(code =>

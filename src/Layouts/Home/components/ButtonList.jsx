@@ -21,7 +21,7 @@ const ButtonList = () => {
             <Image source={Icon.pdf} style={styles.icon} />
             <Text style={styles.buttonText}>Wiring Diagram File</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigate('WorkShop')}>
             <Image source={Icon.folder} style={styles.icon} />
             <Text style={styles.buttonText}>Workshop Folder</Text>
           </TouchableOpacity>
