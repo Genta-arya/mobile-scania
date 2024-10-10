@@ -8,12 +8,15 @@ import {
   RefreshControl,
   FlatList,
   ToastAndroid,
+  Image,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getFaultCodes} from '../../../API/service/FaultCodes/_serviceFaultCodes';
 import {Colors} from '../../../utils/Constants';
 import {useNavigation} from '@react-navigation/native';
 import {showMessage} from 'react-native-flash-message';
+import {Icon} from '../../../utils/Constants';
 
 const ContentSearchFault = () => {
   const [data, setData] = useState([]);
@@ -23,23 +26,13 @@ const ContentSearchFault = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
+
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await getFaultCodes();
-
-      // Menggandakan data 20 kali dengan ID yang berbeda
-      //   const modifiedData = response.data.flatMap((item, index) =>
-      //     Array.from({length: 500}, (_, i) => ({
-      //       ...item,
-      //       id: `${item.id}-${i + 1}`, // Mengubah ID untuk setiap item yang digandakan
-      //     })),
-      //   );
-
-      //   setData(modifiedData);
       setData(response.data);
     } catch (error) {
- 
       showMessage({
         message: 'Failed to retrieve data',
         type: 'danger',
@@ -68,28 +61,32 @@ const ContentSearchFault = () => {
       message: 'Refreshed successfully',
       type: 'success',
       icon: {icon: 'success', position: 'right'},
-    })
+    });
   };
 
   const handleCodePress = code => {
-    // Navigasi ke PdfPreview dengan data kode
     navigation.navigate('PdfPreview', {pdfUri: code.pdfUrl});
   };
 
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color={Colors.abu} />
+        <ActivityIndicator size="large" color={Colors.black} />
       ) : (
         <>
           {!selectedFaultCode ? (
             <>
-              <TextInput
-                style={styles.input}
-                placeholder="Search Fault Code..."
-                value={searchInput}
-                onChangeText={setSearchInput}
-              />
+              <View style={styles.searchInputContainer}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Search Fault Code..."
+                  placeholderTextColor={Colors.black}
+                  value={searchInput}
+                  onChangeText={setSearchInput}
+                />
+                <Image source={Icon.search} style={styles.icon} />
+              </View>
+
               {searchInput === '' && (
                 <Text
                   style={{
@@ -124,6 +121,7 @@ const ContentSearchFault = () => {
                     colors={[Colors.abu]}
                   />
                 }
+                style={{flex: 1}}
               />
               {data.filter(fault =>
                 fault.name.toLowerCase().includes(searchInput.toLowerCase()),
@@ -136,36 +134,42 @@ const ContentSearchFault = () => {
               <TouchableOpacity style={styles.backButton} onPress={handleBack}>
                 <Text style={styles.backButtonText}>Back</Text>
               </TouchableOpacity>
-              <TextInput
-                style={styles.input}
-                placeholder="Search Codes..."
-                value={searchTerm}
-                onChangeText={setSearchTerm}
-              />
-              {searchTerm === '' && (
-                <Text
-                  style={{
-                    ...styles.suggestion,
-                    marginTop: 10,
-                    textAlign: 'center',
-                  }}>
-                  Total Codes : {selectedFaultCode.codes.length}
-                </Text>
-              )}
-              {selectedFaultCode.codes
-                .filter(code => code.code.includes(searchTerm))
-                .map(code => (
-                  <TouchableOpacity
-                    key={code.id}
-                    onPress={() => handleCodePress(code)}>
-                    <Text style={styles.suggestion}> ~ {code.code}</Text>
-                  </TouchableOpacity>
-                ))}
-              {selectedFaultCode.codes.filter(code =>
-                code.code.includes(searchTerm),
-              ).length === 0 && (
-                <Text style={styles.noCodeFound}>Not Found</Text>
-              )}
+              <View style={styles.searchInputContainer}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Search Codes..."
+                  placeholderTextColor={Colors.black}
+                  value={searchTerm}
+                  onChangeText={setSearchTerm}
+                />
+                <Image source={Icon.search} style={styles.icon} />
+              </View>
+              <ScrollView style={{flex: 1}}>
+                {searchTerm === '' && (
+                  <Text
+                    style={{
+                      ...styles.suggestion,
+                      marginTop: 10,
+                      textAlign: 'center',
+                    }}>
+                    Total Codes : {selectedFaultCode.codes.length}
+                  </Text>
+                )}
+                {selectedFaultCode.codes
+                  .filter(code => code.code.includes(searchTerm))
+                  .map(code => (
+                    <TouchableOpacity
+                      key={code.id}
+                      onPress={() => handleCodePress(code)}>
+                      <Text style={styles.codeItem}> ~ {code.code}</Text>
+                    </TouchableOpacity>
+                  ))}
+                {selectedFaultCode.codes.filter(code =>
+                  code.code.includes(searchTerm),
+                ).length === 0 && (
+                  <Text style={styles.noCodeFound}>Not Found</Text>
+                )}
+              </ScrollView>
             </View>
           )}
         </>
@@ -181,28 +185,43 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    height: '100%',
-
+    marginBottom: 10,
+    flex: 1,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 20,
   },
+  icon: {
+    width: 20,
+    height: 20,
+    position: 'absolute',
+    left: 10,
+    top: 10,
+  },
+  searchInputContainer: {
+    position: 'relative',
+    width: '100%',
+    justifyContent: 'center',
+  },
   input: {
     height: 40,
     borderColor: '#ccc',
+    color: Colors.black,
+    paddingLeft: 40,
     borderWidth: 1,
     borderRadius: 8,
+    elevation: 2,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginBottom: 12,
     backgroundColor: '#fff',
   },
   searchContainer: {
+    flex: 1,
     marginTop: 20,
   },
   backButton: {
-    // hext warna kulit
     backgroundColor: '#8c837e',
     borderRadius: 8,
     padding: 10,
@@ -221,6 +240,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1',
     padding: 10,
     borderRadius: 5,
+  },
+  codeItem: {
+    fontSize: 16,
+    color: '#555',
+    marginVertical: 5,
+    backgroundColor: '#f1f1f1',
+    padding: 10,
+    borderRadius: 5,
+    flexWrap: 'wrap', // Menambahkan pembungkusan teks
+    maxWidth: '100%', // Membatasi lebar teks agar tetap di dalam container
   },
   noFaultFound: {
     fontSize: 16,

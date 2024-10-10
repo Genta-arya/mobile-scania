@@ -1,6 +1,7 @@
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { WebView } from 'react-native-webview';
+import { Colors } from '../../utils/Constants';
 
 const LayoutCompany = () => {
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,7 @@ const LayoutCompany = () => {
     <View style={styles.container}>
       {loading && ( 
         <View style={styles.loading}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color={Colors.black} />
         </View>
       )}
       <WebView

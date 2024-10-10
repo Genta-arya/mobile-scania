@@ -17,7 +17,7 @@ const ButtonList = () => {
             <Image source={Icon.search} style={styles.icon} />
             <Text style={styles.buttonText}>Search Fault Codes</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => handleNavigate('Wiring')}>
             <Image source={Icon.pdf} style={styles.icon} />
             <Text style={styles.buttonText}>Wiring Diagram File</Text>
           </TouchableOpacity>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     borderBottomColor: Colors.gray,
     borderBottomWidth: 3,
-    color: "#21262d",
+    color: Colors.black,
     marginBottom: 20,
   },
   buttonContainer: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
    
     width: '100%',
-    marginTop: 10, // Menambahkan jarak antara kontainer tombol utama dan sekunder
+    marginTop: 10,
   },
   button: {
     backgroundColor: 'white',

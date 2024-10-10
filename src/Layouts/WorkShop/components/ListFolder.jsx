@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getFolderWorkshop} from '../../../API/service/Workshop/_serviceWorkshop';
-import {Icon} from '../../../utils/Constants';
+import {Colors, Icon} from '../../../utils/Constants';
 import {showMessage} from 'react-native-flash-message';
+import { useNavigation } from '@react-navigation/native';
 
 const ListFolder = () => {
   const [data, setData] = useState([]);
@@ -20,7 +21,7 @@ const ListFolder = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const navigation = useNavigation();
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -32,7 +33,6 @@ const ListFolder = () => {
         message: 'Failed to retrieve data',
         type: 'danger',
         icon: {icon: 'danger', position: 'right'},
-        
       });
     } finally {
       setIsLoading(false);
@@ -63,25 +63,17 @@ const ListFolder = () => {
       message: 'Refreshed successfully',
       type: 'success',
       icon: {icon: 'success', position: 'right'},
-    })
+    });
   };
 
-  const handleNavigate = id => {
-    showMessage({
-      message: `ID: ${id}`,
-      type: 'info',
-
-      icon: {icon: 'success', position: 'right'}, 
-      
-      animated: true,
-      description: 'Folder berhasil dipilih!', 
-    });
+  const handleNavigate = (id , title) => {
+    navigation.navigate('ListFile', {folderId: id , title: title}); 
   };
 
   const renderItem = ({item}) => (
     <TouchableOpacity
       style={styles.folderItem}
-      onPress={() => handleNavigate(item.id)}>
+      onPress={() => handleNavigate(item.id , item.name)}>
       <Image source={Icon.folder} style={styles.icon} />
       <Text style={styles.folderName} numberOfLines={1} ellipsizeMode="tail">
         {item.name}
@@ -91,14 +83,18 @@ const ListFolder = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search folders..."
-        value={searchQuery}
-        onChangeText={handleSearch}
-      />
+      <View style={styles.searchInputContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search folders..."
+          placeholderTextColor={Colors.black}
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+        <Image source={Icon.search} style={styles.icons} />
+      </View>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={Colors.black}/>
       ) : (
         <FlatList
           data={filteredData}
@@ -123,13 +119,27 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
   },
+  searchInputContainer: {
+    position: 'relative',
+    width: '100%',
+    justifyContent: 'center',
+  },
   searchInput: {
     height: 40,
     borderColor: '#CCC',
+    color: Colors.black,
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
+    paddingLeft: 40,
     marginBottom: 16,
+  },
+  icons: {
+    width: 20,
+    height: 20,
+    position: 'absolute',
+    left: 10,
+    top: 10,
   },
   folderItem: {
     flex: 1,

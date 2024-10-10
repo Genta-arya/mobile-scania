@@ -1,51 +1,47 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
+import React, {useState} from 'react';
+import {WebView} from 'react-native-webview';
 import ContainerContent from '../../components/ContainerContent';
+import {Colors} from '../../utils/Constants';
 
 const LayoutAbout = () => {
+  const [loading, setLoading] = useState(true); // State untuk loading
+
+  const handleLoadEnd = () => {
+    setLoading(false);
+  };
   return (
-    <ContainerContent>
-      <View style={styles.contentContainer}>
-        <Text style={styles.title}>About Dummy Company</Text>
-        <Text style={styles.description}>
-          This is a brief description of the dummy company. Here you can provide information about the company’s mission, vision, and services.
-        </Text>
-        <Text style={styles.subTitle}>Our Mission</Text>
-        <Text style={styles.description}>
-          To deliver high-quality products and services that exceed our customers' expectations.
-        </Text>
-        <Text style={styles.subTitle}>Our Vision</Text>
-        <Text style={styles.description}>
-          To be a leading company in our industry, recognized for our innovation and commitment to excellence.
-        </Text>
-      </View>
-    </ContainerContent>
+    <View style={styles.container}>
+      {loading && (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color={Colors.black} />
+        </View>
+      )}
+      <WebView
+        source={{uri: 'https://ebrakesys.vercel.app/about'}}
+        style={styles.webview}
+        onLoadEnd={handleLoadEnd}
+      />
+    </View>
   );
 };
 
 export default LayoutAbout;
 
 const styles = StyleSheet.create({
-  contentContainer: {
+  container: {
+    flex: 1,
+  },
+  webview: {
+    flex: 1,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#21262d',
-    marginBottom: 10,
-  },
-  subTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333',
-    marginTop: 15,
-  },
-  description: {
-    fontSize: 16,
-    color: '#555555',
-    textAlign: 'center',
-    marginBottom: 10,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
   },
 });
